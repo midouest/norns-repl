@@ -3,7 +3,7 @@
 	"publisher": "midouest",
 	"displayName": "Norns REPL",
 	"description": "Interact with Norns in a VSCode terminal",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"license": "MIT",
 	"repository": {
 		"url": "https://github.com/midouest/norns-repl"
