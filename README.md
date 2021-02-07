@@ -2,6 +2,8 @@
 
 Interact with [Norns](https://monome.org/norns/) in a VSCode terminal
 
+![Demo](https://github.com/midouest/norns-repl/blob/master/images/demo.gif?raw=true)
+
 ## Commands
 
 `norns-repl.connect`
