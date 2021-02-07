@@ -21,7 +21,22 @@
 				"command": "norns-repl.connect",
 				"title": "Norns REPL: Connect to Matron..."
 			}
-		]
+		],
+		"configuration": {
+			"title": "Norns REPL",
+			"properties": {
+				"norns-repl.connect.host": {
+					"type": "string",
+					"default": "norns.local",
+					"description": "Norns hostname"
+				},
+				"norns-repl.connect.port": {
+					"type": "number",
+					"default": 5555,
+					"description": "Matron websocket port"
+				}
+			}
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "yarn run compile",

@@ -31,7 +31,8 @@ function connectCommand(): void {
 	status.text = 'Connecting to Matron...';
 	status.show();
 
-	ws = new WebSocket("ws://norns.local:5555", ['bus.sp.nanomsg.org']);
+	const { host, port } = vscode.workspace.getConfiguration('norns-repl.connect');
+	ws = new WebSocket(`ws://${host}:${port}`, ['bus.sp.nanomsg.org']);
 
 	const rx = new Subject<string>();
 
