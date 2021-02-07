@@ -58,8 +58,13 @@ function connectCommand(): void {
 		status.hide();
 
 		const repl = new NornsREPL(rx.asObservable());
+
 		repl.tx$.subscribe((data) => {
 			ws?.send(data);
+		});
+
+		repl.close$.subscribe(() => {
+			cleanup();
 		});
 
 		term = vscode.window.createTerminal({

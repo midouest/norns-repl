@@ -21,12 +21,12 @@ export class NornsREPL implements vscode.Pseudoterminal {
     protected writeEmitter = new vscode.EventEmitter<string>();
     protected buffer = '';
     protected closeSource = new Subject<void>();
-    protected close$ = this.closeSource.asObservable();
     protected txSource = new Subject<string>();
     protected history: string[] = [];
     protected historyIdx = 0;
 
     readonly onDidWrite = this.writeEmitter.event;
+    readonly close$ = this.closeSource.asObservable();
     readonly tx$ = this.txSource.asObservable();
 
     constructor(protected rx$: Observable<string>) {
