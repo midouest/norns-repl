@@ -2,7 +2,7 @@
 	"name": "norns-repl",
 	"publisher": "midouest",
 	"displayName": "norns-repl",
-	"description": "",
+	"description": "Interact with Norns in a VSCode terminal",
 	"version": "0.0.1",
 	"license": "MIT",
 	"engines": {
