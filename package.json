@@ -1,7 +1,7 @@
 {
 	"name": "norns-repl",
 	"publisher": "midouest",
-	"displayName": "norns-repl",
+	"displayName": "Norns REPL",
 	"description": "Interact with Norns in a VSCode terminal",
 	"version": "1.0.0",
 	"license": "MIT",

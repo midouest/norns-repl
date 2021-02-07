@@ -1,4 +1,4 @@
-# norns-repl
+# Norns REPL
 
 Interact with [Norns](https://monome.org/norns/) in a VSCode terminal
 
