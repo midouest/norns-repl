@@ -1,5 +1,6 @@
 {
 	"name": "norns-repl",
+	"publisher": "midouest",
 	"displayName": "norns-repl",
 	"description": "",
 	"version": "0.0.1",
