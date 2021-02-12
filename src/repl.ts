@@ -1,8 +1,8 @@
-import { Observable, Subject } from 'rxjs';
-import { debounceTime, takeUntil } from 'rxjs/operators';
 import * as vscode from 'vscode';
+import WebSocket = require('ws');
 
 import { info } from './log';
+import { debounce } from './util';
 
 enum Keys {
     enter = '\r',
@@ -20,29 +20,24 @@ enum Actions {
 export class NornsREPL implements vscode.Pseudoterminal {
     protected writeEmitter = new vscode.EventEmitter<string>();
     protected buffer = '';
-    protected closeSource = new Subject<void>();
-    protected txSource = new Subject<string>();
     protected history: string[] = [];
     protected historyIdx = 0;
 
     readonly onDidWrite = this.writeEmitter.event;
-    readonly close$ = this.closeSource.asObservable();
-    readonly tx$ = this.txSource.asObservable();
 
-    constructor(protected rx$: Observable<string>) {
+    constructor(protected ws: WebSocket) {
         const re = /\n/g;
 
-        rx$.pipe(takeUntil(this.close$)).subscribe((data) => {
-            const text = data.replace(re, '\r\n');
-            this.writeEmitter.fire(text);
-        });
+        const writePromptDebounce = debounce(() => this.writePrompt(), 100);
 
-        rx$.pipe(debounceTime(100), takeUntil(this.close$)).subscribe(() => {
-            this.writePrompt();
+        this.ws.on('message', (data) => {
+            const text = data.toString().replace(re, '\r\n');
+            this.writeEmitter.fire(text);
+            writePromptDebounce();
         });
     }
 
-    open(_initialDimensions?: vscode.TerminalDimensions): void {
+    open(): void {
         info('repl open');
         this.writeEmitter.fire('Connected to Matron!\r\n');
         this.writePrompt();
@@ -50,9 +45,7 @@ export class NornsREPL implements vscode.Pseudoterminal {
 
     close(): void {
         info('repl close');
-        this.closeSource.next();
-        this.closeSource.complete();
-        this.txSource.complete();
+        this.ws.close();
     }
 
     handleInput(data: string): void {
@@ -122,7 +115,7 @@ export class NornsREPL implements vscode.Pseudoterminal {
             this.historyIdx = 0;
 
             this.writeEmitter.fire('\r\n');
-            this.txSource.next(this.buffer + '\r');
+            this.ws.send(this.buffer + '\r');
             this.buffer = '';
             return;
         }

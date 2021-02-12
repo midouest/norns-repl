@@ -1,11 +1,9 @@
-import { Subject } from 'rxjs';
 import * as vscode from 'vscode';
-import * as WebSocket from 'ws';
+import { connectClient } from './client';
 
-import { info, error } from './log';
+import { info } from './log';
 import { NornsREPL } from './repl';
 
-let ws: WebSocket | undefined;
 let term: vscode.Terminal | undefined;
 
 export function activate(context: vscode.ExtensionContext) {
@@ -19,7 +17,7 @@ export function deactivate() {
     cleanup();
 }
 
-function connectCommand(): void {
+async function connectCommand(): Promise<void> {
     info('connect');
 
     if (term !== undefined) {
@@ -32,57 +30,24 @@ function connectCommand(): void {
     status.show();
 
     const { host, port } = vscode.workspace.getConfiguration('norns-repl.connect');
-    ws = new WebSocket(`ws://${host}:${port}`, ['bus.sp.nanomsg.org']);
-
-    const rx = new Subject<string>();
-
-    ws.on('message', (data) => {
-        rx.next(data.toString());
+    const ws = await connectClient({
+        host, port
     });
+    status.hide();
 
-    ws.on('close', (code, reason) => {
-        info('websocket close', code, reason);
-        cleanup();
+    const repl = new NornsREPL(ws);
+    term = vscode.window.createTerminal({
+        name: 'norns',
+        pty: repl,
     });
+    term.show();
 
-    ws.on('error', (err) => {
-        error('websocket error', err);
-        status.hide();
-        const msg = `Error connecting to Matron: ${err.message}`;
-        vscode.window.showErrorMessage(msg);
-        cleanup();
-    });
-
-    ws.on('open', () => {
-        info('websocket open');
-        status.hide();
-
-        const repl = new NornsREPL(rx.asObservable());
-
-        repl.tx$.subscribe((data) => {
-            ws?.send(data);
-        });
-
-        repl.close$.subscribe(() => {
-            cleanup();
-        });
-
-        term = vscode.window.createTerminal({
-            name: 'norns',
-            pty: repl,
-        });
-        term.show();
-    });
+    ws.on('error', cleanup);
+    ws.on('close', cleanup);
 }
 
-function cleanup(): void {
-    if (term !== undefined) {
-        term.dispose();
-        term = undefined;
-    }
-
-    if (ws !== undefined) {
-        ws.close();
-        ws = undefined;
-    }
+function cleanup() {
+    term?.hide();
+    term?.dispose();
+    term = undefined;
 }
