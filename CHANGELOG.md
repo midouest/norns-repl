@@ -6,6 +6,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+- chore: remove RxJS dependency
+
 ## [1.0.0] - 2021-02-06
 
 Initial release
