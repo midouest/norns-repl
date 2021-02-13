@@ -17,6 +17,7 @@ export class History {
     constructor(protected maxLength: number) { }
 
     push(command: string): void {
+        this.index = 0;
         if (command === '' || command === this.mostRecent) {
             return;
         }
@@ -25,7 +26,6 @@ export class History {
         if (this.commands.length > this.maxLength) {
             this.commands.shift();
         }
-        this.index = 0;
     }
 
     prev(): string | undefined {
@@ -33,7 +33,7 @@ export class History {
             return;
         }
 
-        this.index++;
+        this.index += 1;
         return this.current;
     }
 
@@ -42,7 +42,7 @@ export class History {
             return;
         }
 
-        this.index--;
+        this.index -= 1;
         return this.current;
     }
 }

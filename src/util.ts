@@ -22,3 +22,11 @@ export function debounce(callback: () => void, ms: number): () => void {
         timeout = setTimeout(callback, ms);
     };
 }
+
+export function insertAt(str: string, index: number, data: string): string {
+    return str.slice(0, index) + data + str.slice(index);
+}
+
+export function deleteAt(str: string, index: number): string {
+    return str.slice(0, index) + str.slice(index + 1);
+}

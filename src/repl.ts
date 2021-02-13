@@ -1,34 +1,23 @@
 import * as vscode from 'vscode';
 import WebSocket = require('ws');
-import { History } from './history';
 
+import { InputBuffer } from './input';
 import { info, debounce } from './util';
 
-enum Keys {
-    enter = '\r',
-    backspace = '\x7f',
-    up = '\x1b[A',
-    down = '\x1b[B',
-}
-
-enum Actions {
-    cursorBack = "\x1b[D",
-    deleteChar = "\x1b[P",
-    clearLine = "\x1b[2K",
-}
-
 export class NornsREPL implements vscode.Pseudoterminal {
+    protected input = new InputBuffer({
+        prefix: '> ',
+        maxHistory: 100,
+    });
+
     protected writeEmitter = new vscode.EventEmitter<string>();
-    protected buffer = '';
-    protected history = new History(this.maxHistory);
 
     readonly onDidWrite = this.writeEmitter.event;
 
     constructor(protected ws: WebSocket, protected maxHistory = 100) {
-        const re = /\n/g;
-
         const writePromptDebounce = debounce(() => this.writePrompt(), 100);
 
+        const re = /\n/g;
         this.ws.on('message', (data) => {
             const text = data.toString().replace(re, '\r\n');
             this.writeEmitter.fire(text);
@@ -38,7 +27,6 @@ export class NornsREPL implements vscode.Pseudoterminal {
 
     open(): void {
         info('repl open');
-        this.writeEmitter.fire('Connected to Matron!\r\n');
         this.writePrompt();
     }
 
@@ -48,62 +36,22 @@ export class NornsREPL implements vscode.Pseudoterminal {
     }
 
     handleInput(data: string): void {
-        if (data === Keys.backspace) {
-            this.handleBackspace();
+        const response = this.input.handle(data);
+        if (!response) {
             return;
         }
 
-        // ignore control codes
-        if (data.length > 1) {
-            if (data === Keys.up) {
-                this.restoreHistory(this.history.prev());
-            } else if (data === Keys.down) {
-                this.restoreHistory(this.history.next());
-            }
+        if (typeof response === 'string') {
+            this.writeEmitter.fire(response);
             return;
         }
 
-        this.handleChar(data);
+        this.writeEmitter.fire(response.output);
+        this.ws.send(response.command + '\r');
     }
 
     protected writePrompt(): void {
-        this.writeEmitter.fire(Actions.clearLine);
-        this.writeEmitter.fire(`\r> ${this.buffer}`);
-    }
-
-    protected handleBackspace(): void {
-        if (this.buffer.length === 0) {
-            return;
-        }
-
-        this.buffer = this.buffer.substr(0, this.buffer.length - 1);
-        this.writeEmitter.fire(Actions.cursorBack);
-        this.writeEmitter.fire(Actions.deleteChar);
-    }
-
-    protected restoreHistory(command?: string): void {
-        if (!command) {
-            return;
-        }
-        this.buffer = command;
-        this.writePrompt();
-    }
-
-    protected handleChar(data: string): void {
-        if (data === Keys.enter) {
-            if (this.buffer === '') {
-                return;
-            }
-
-            this.history.push(this.buffer);
-
-            this.writeEmitter.fire('\r\n');
-            this.ws.send(this.buffer + '\r');
-            this.buffer = '';
-            return;
-        }
-
-        this.buffer += data;
+        const data = this.input.prompt();
         this.writeEmitter.fire(data);
     }
 }
