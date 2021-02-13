@@ -6,11 +6,15 @@ import { info } from "./util";
 export function activate(context: vscode.ExtensionContext) {
     info("activate");
 
-    const names = ["matron", "crone"];
-    for (const name of names) {
+    const commands = [
+        ["matron", "\n"],
+        ["crone", "\x1b"],
+    ];
+
+    for (const [name, terminator] of commands) {
         let disposable = vscode.commands.registerCommand(
             `nornsREPL.${name}.connect`,
-            createConnectCommand(name)
+            createConnectCommand(name, terminator)
         );
         context.subscriptions.push(disposable);
     }
@@ -18,7 +22,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 let terminals: { [name: string]: vscode.Terminal } = {};
 
-function createConnectCommand(name: string): () => void {
+function createConnectCommand(name: string, terminator: string): () => void {
     function cleanup(): void {
         const term = terminals[name];
         term?.dispose();
@@ -32,6 +36,7 @@ function createConnectCommand(name: string): () => void {
         host,
         port,
         maxHistory,
+        terminator,
         cleanup,
     };
 

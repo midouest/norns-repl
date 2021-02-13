@@ -9,12 +9,13 @@ export interface NornsREPLOptions {
     maxHistory: number;
     promptDebounce: number;
     name: string;
+    terminator: string;
 }
 
 export class NornsREPL implements vscode.Pseudoterminal {
     protected input = new InputBuffer({
         prefix: "> ",
-        maxHistory: 100,
+        maxHistory: this.options.maxHistory,
     });
 
     protected writeEmitter = new vscode.EventEmitter<string>();
@@ -59,7 +60,7 @@ export class NornsREPL implements vscode.Pseudoterminal {
         }
 
         this.writeEmitter.fire(response.output);
-        this.options.webSocket.send(response.command + "\r");
+        this.options.webSocket.send(response.command + this.options.terminator);
     }
 
     protected writePrompt(): void {

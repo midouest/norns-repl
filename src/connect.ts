@@ -7,6 +7,7 @@ export interface ConnectOptions {
     name: string;
     host: string;
     port: number;
+    terminator: string;
     maxHistory: number;
     cleanup: () => void;
 }
@@ -15,7 +16,7 @@ export async function connectCommand(
     options: ConnectOptions
 ): Promise<vscode.Pseudoterminal> {
     info("connect");
-    const { name, host, port, maxHistory, cleanup } = options;
+    const { name, host, port, maxHistory, terminator, cleanup } = options;
 
     const status = vscode.window.createStatusBarItem();
     status.text = `Connecting to ${name}...`;
@@ -31,6 +32,7 @@ export async function connectCommand(
         name,
         webSocket,
         maxHistory,
+        terminator,
         promptDebounce: 100,
     });
 
