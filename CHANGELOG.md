@@ -6,7 +6,15 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+# [1.2.0] - 2021-02-14
+
+Crone
+
+-   feat: crone REPL
+
 # [1.1.0] - 2021-02-13
+
+Command prompt improvements
 
 -   refactor: remove RxJS dependency
 -   feat: cursor back/forward
@@ -16,4 +24,4 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 Initial release
 
--   feat: `norns-repl.connect` command
+-   feat: matron REPL
