@@ -6,13 +6,15 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+# [1.3.0] - 2021-02-14
+
+-   feat: support special `;restart` and `;install` commands
+
 # [1.2.1] - 2021-02-14
 
 -   fix: use special sclang terminator for crone commands
 
 # [1.2.0] - 2021-02-14
-
-Crone
 
 -   feat: crone REPL
 
