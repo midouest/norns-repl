@@ -1,58 +1,62 @@
-import * as vscode from 'vscode';
-import { connectClient } from './client';
+import * as vscode from "vscode";
+import { ConnectOptions, connectCommand } from "./connect";
 
-import { info } from './util';
-import { NornsREPL } from './repl';
-
-let term: vscode.Terminal | undefined;
+import { info } from "./util";
 
 export function activate(context: vscode.ExtensionContext) {
-    info('activate');
-    let disposable = vscode.commands.registerCommand('norns-repl.connect', connectCommand);
-    context.subscriptions.push(disposable);
+    info("activate");
+
+    const names = ["matron", "crone"];
+    for (const name of names) {
+        let disposable = vscode.commands.registerCommand(
+            `nornsREPL.${name}.connect`,
+            createConnectCommand(name)
+        );
+        context.subscriptions.push(disposable);
+    }
+}
+
+let terminals: { [name: string]: vscode.Terminal } = {};
+
+function createConnectCommand(name: string): () => void {
+    function cleanup(): void {
+        const term = terminals[name];
+        term?.dispose();
+        delete terminals[name];
+    }
+
+    const { host, maxHistory } = vscode.workspace.getConfiguration("nornsREPL");
+    const { port } = vscode.workspace.getConfiguration(`nornsREPL.${name}`);
+    const options: ConnectOptions = {
+        name,
+        host,
+        port,
+        maxHistory,
+        cleanup,
+    };
+
+    return async () => {
+        let term = terminals[name];
+        if (term) {
+            term.show();
+            return;
+        }
+
+        const pty = await connectCommand(options);
+        term = vscode.window.createTerminal({
+            name,
+            pty,
+        });
+        term.show();
+
+        terminals[name] = term;
+    };
 }
 
 export function deactivate() {
-    info('deactivate');
-    cleanup();
-}
-
-async function connectCommand(): Promise<void> {
-    info('connect');
-
-    if (term !== undefined) {
-        term.show();
-        return;
+    info("deactivate");
+    for (const term of Object.values(terminals)) {
+        term.dispose();
     }
-
-    const status = vscode.window.createStatusBarItem();
-    status.text = 'Connecting to Matron...';
-    status.show();
-
-    const { host, port } = vscode.workspace.getConfiguration('norns-repl.connect');
-    const webSocket = await connectClient({
-        host, port
-    });
-    status.hide();
-
-    const { length: maxHistory } = vscode.workspace.getConfiguration('norns-repl.history');
-    const repl = new NornsREPL({
-        webSocket,
-        maxHistory,
-        promptDebounce: 100,
-    });
-    term = vscode.window.createTerminal({
-        name: 'norns',
-        pty: repl,
-    });
-    term.show();
-
-    webSocket.on('error', cleanup);
-    webSocket.on('close', cleanup);
-}
-
-function cleanup() {
-    term?.hide();
-    term?.dispose();
-    term = undefined;
+    terminals = {};
 }

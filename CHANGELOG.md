@@ -8,12 +8,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 # [1.1.0] - 2021-02-13
 
-- refactor: remove RxJS dependency
-- feat: cursor back/forward
-- feat: history improvements
+-   refactor: remove RxJS dependency
+-   feat: cursor back/forward
+-   feat: history improvements
 
 ## [1.0.0] - 2021-02-06
 
 Initial release
 
-- feat: `norns-repl.connect` command
+-   feat: `norns-repl.connect` command

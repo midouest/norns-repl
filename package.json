@@ -16,29 +16,39 @@
     ],
     "main": "./dist/extension.js",
     "activationEvents": [
-        "onCommand:norns-repl.connect"
+        "onCommand:nornsREPL.matron.connect",
+        "onCommand:nornsREPL.crone.connect"
     ],
     "contributes": {
         "commands": [
             {
-                "command": "norns-repl.connect",
+                "command": "nornsREPL.matron.connect",
                 "title": "Norns REPL: Connect to Matron..."
+            },
+            {
+                "command": "nornsREPL.crone.connect",
+                "title": "Norns REPL: Connect to Crone..."
             }
         ],
         "configuration": {
             "title": "Norns REPL",
             "properties": {
-                "norns-repl.connect.host": {
+                "nornsREPL.host": {
                     "type": "string",
                     "default": "norns.local",
                     "description": "Norns hostname"
                 },
-                "norns-repl.connect.port": {
+                "nornsREPL.matron.port": {
                     "type": "number",
                     "default": 5555,
-                    "description": "Matron websocket port"
+                    "description": "Matron REPL websocket port"
                 },
-                "norns-repl.history.length": {
+                "nornsREPL.crone.port": {
+                    "type": "number",
+                    "default": 5556,
+                    "description": "Crone REPL websocket port"
+                },
+                "nornsREPL.maxHistory": {
                     "type": "number",
                     "default": 100,
                     "description": "Maximum command history length"

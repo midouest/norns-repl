@@ -14,11 +14,11 @@ export class History {
         return this.commands[this.commands.length - 1];
     }
 
-    constructor(protected maxLength: number) { }
+    constructor(protected maxLength: number) {}
 
     push(command: string): void {
         this.index = 0;
-        if (command === '' || command === this.mostRecent) {
+        if (command === "" || command === this.mostRecent) {
             return;
         }
 

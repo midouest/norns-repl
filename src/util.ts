@@ -1,4 +1,3 @@
-
 export function info(message?: any, ...optionalParams: any[]): void {
     const infoMsg = `INFO\tnorns-repl\t${message}`;
     console.log(infoMsg, ...optionalParams);
@@ -9,8 +8,7 @@ export function error(message?: any, ...optionalParams: any[]): void {
     console.error(errorMsg, ...optionalParams);
 }
 
-
-export type Type<T> = { new(...args: any[]): T };
+export type Type<T> = { new (...args: any[]): T };
 
 export function debounce(callback: () => void, ms: number): () => void {
     let timeout: NodeJS.Timeout;
@@ -29,4 +27,8 @@ export function insertAt(str: string, index: number, data: string): string {
 
 export function deleteAt(str: string, index: number): string {
     return str.slice(0, index) + str.slice(index + 1);
+}
+
+export function capitalize(str: string): string {
+    return str[0].toUpperCase() + str.slice(1);
 }

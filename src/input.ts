@@ -15,11 +15,11 @@ export type WriteResponse = CommandResponse | string | undefined;
 
 export class InputBuffer {
     protected cursor = 0;
-    protected buffer = '';
+    protected buffer = "";
     protected prevBuffer?: string;
     protected history = new History(this.options.maxHistory);
 
-    constructor(protected options: PromptOptions) { }
+    constructor(protected options: PromptOptions) {}
 
     handle(data: string): WriteResponse {
         if (data === BACKSPACE) {
@@ -33,7 +33,7 @@ export class InputBuffer {
 
         if (data === DOWN) {
             const command = this.history.next();
-            return this.handleHistory(command ?? '');
+            return this.handleHistory(command ?? "");
         }
 
         if (data === LEFT && this.cursor > 0) {
@@ -89,11 +89,11 @@ export class InputBuffer {
 
     protected handleReturn(): CommandResponse | undefined {
         const command = this.buffer;
-        if (this.buffer !== '') {
+        if (this.buffer !== "") {
             this.history.push(command);
         }
 
-        this.buffer = '';
+        this.buffer = "";
         this.cursor = 0;
         const output = NEWLINE;
 

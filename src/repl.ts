@@ -1,18 +1,19 @@
-import * as vscode from 'vscode';
-import WebSocket = require('ws');
+import * as vscode from "vscode";
+import WebSocket = require("ws");
 
-import { InputBuffer } from './input';
-import { info, debounce } from './util';
+import { InputBuffer } from "./input";
+import { info, debounce, capitalize } from "./util";
 
 export interface NornsREPLOptions {
     webSocket: WebSocket;
     maxHistory: number;
     promptDebounce: number;
+    name: string;
 }
 
 export class NornsREPL implements vscode.Pseudoterminal {
     protected input = new InputBuffer({
-        prefix: '> ',
+        prefix: "> ",
         maxHistory: 100,
     });
 
@@ -21,23 +22,28 @@ export class NornsREPL implements vscode.Pseudoterminal {
     readonly onDidWrite = this.writeEmitter.event;
 
     constructor(protected options: NornsREPLOptions) {
-        const writePromptDebounce = debounce(() => this.writePrompt(), this.options.promptDebounce);
+        const writePromptDebounce = debounce(
+            () => this.writePrompt(),
+            this.options.promptDebounce
+        );
 
         const re = /\n/g;
-        this.options.webSocket.on('message', (data) => {
-            const text = data.toString().replace(re, '\r\n');
+        this.options.webSocket.on("message", (data) => {
+            const text = data.toString().replace(re, "\r\n");
             this.writeEmitter.fire(text);
             writePromptDebounce();
         });
     }
 
     open(): void {
-        info('repl open');
+        info("repl open");
+        const name = capitalize(this.options.name);
+        this.writeEmitter.fire(`Connected to ${name}!\n`);
         this.writePrompt();
     }
 
     close(): void {
-        info('repl close');
+        info("repl close");
         this.options.webSocket.close();
     }
 
@@ -47,13 +53,13 @@ export class NornsREPL implements vscode.Pseudoterminal {
             return;
         }
 
-        if (typeof response === 'string') {
+        if (typeof response === "string") {
             this.writeEmitter.fire(response);
             return;
         }
 
         this.writeEmitter.fire(response.output);
-        this.options.webSocket.send(response.command + '\r');
+        this.options.webSocket.send(response.command + "\r");
     }
 
     protected writePrompt(): void {
@@ -61,4 +67,3 @@ export class NornsREPL implements vscode.Pseudoterminal {
         this.writeEmitter.fire(data);
     }
 }
-
