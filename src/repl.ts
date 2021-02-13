@@ -3,7 +3,7 @@ import WebSocket = require("ws");
 import { API } from "./api";
 
 import { InputBuffer } from "./input";
-import { info, debounce, capitalize } from "./util";
+import { info, debounce } from "./util";
 
 export interface NornsREPLOptions {
     webSocket: WebSocket;
@@ -47,8 +47,7 @@ export class NornsREPL implements vscode.Pseudoterminal {
 
     open(): void {
         info("repl open");
-        const name = capitalize(this.options.name);
-        this.writeEmitter.fire(`Connected to ${name}!\n`);
+        this.writeEmitter.fire(`connected to ${this.options.name}!\n`);
         this.writePrompt();
     }
 
@@ -77,25 +76,34 @@ export class NornsREPL implements vscode.Pseudoterminal {
 
         const components = response.command.split(" ");
         if (components[0] === ";install") {
-            this.options.api
-                .installProjectFromURL(components[1])
-                .then((result) => {
-                    info(result);
-                });
-        } else {
-            const operation = response.command.slice(1);
-            this.options.api
-                .doUnitOperation(this.options.unit, operation)
-                .then((result) => {
-                    info(result);
-                });
+            this.writeEmitter.fire(response.output);
+            this.writeEmitter.fire("starting...\r\n");
+            this.install(components[1]);
+            return;
         }
 
         this.writeEmitter.fire(response.output);
+        this.do(response.command.slice(1));
     }
 
     protected writePrompt(): void {
         const data = this.input.prompt();
         this.writeEmitter.fire(data);
+    }
+
+    protected async install(url: string): Promise<void> {
+        const response = await this.options.api.installProjectFromURL(url);
+
+        const output = response.error
+            ? `install failed: ${response.error}\r\n`
+            : `installed "${response.catalog_entry.project_name}"!\r\n`;
+
+        this.writeEmitter.fire(output);
+        this.writePrompt();
+    }
+
+    protected async do(operation: string): Promise<void> {
+        await this.options.api.doUnitOperation(this.options.unit, operation);
+        // todo: response
     }
 }

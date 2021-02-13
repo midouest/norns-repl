@@ -1,7 +1,7 @@
 import { request, RequestOptions } from "http";
 import { URL } from "url";
 
-function httpRequest(options: string | RequestOptions | URL): Promise<string> {
+function httpRequest(options: string | RequestOptions | URL): Promise<any> {
     return new Promise((resolve, reject) => {
         const req = request(options, (res) => {
             let buffer = "";
@@ -11,7 +11,12 @@ function httpRequest(options: string | RequestOptions | URL): Promise<string> {
             });
 
             res.on("end", () => {
-                resolve(buffer);
+                try {
+                    const obj = JSON.parse(buffer);
+                    resolve(obj);
+                } catch (err) {
+                    reject(err);
+                }
             });
         });
 
@@ -26,7 +31,7 @@ function httpRequest(options: string | RequestOptions | URL): Promise<string> {
 export class API {
     constructor(protected host: string) {}
 
-    doUnitOperation(unit: string, operation: string): Promise<string> {
+    doUnitOperation(unit: string, operation: string): Promise<any> {
         return httpRequest({
             host: this.host,
             path: `/api/v1/unit/${unit}?do=${operation}`,
@@ -34,7 +39,7 @@ export class API {
         });
     }
 
-    installProjectFromURL(url: string): Promise<string> {
+    installProjectFromURL(url: string): Promise<any> {
         const encodedURL = encodeURIComponent(url);
         return httpRequest({
             host: this.host,

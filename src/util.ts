@@ -26,7 +26,3 @@ export function insertAt(str: string, index: number, data: string): string {
 export function deleteAt(str: string, index: number): string {
     return str.slice(0, index) + str.slice(index + 1);
 }
-
-export function capitalize(str: string): string {
-    return str[0].toUpperCase() + str.slice(1);
-}
