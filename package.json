@@ -37,6 +37,11 @@
                     "type": "number",
                     "default": 5555,
                     "description": "Matron websocket port"
+                },
+                "norns-repl.history.length": {
+                    "type": "number",
+                    "default": 100,
+                    "description": "Maximum command history length"
                 }
             }
         }

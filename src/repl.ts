@@ -14,7 +14,7 @@ export class NornsREPL implements vscode.Pseudoterminal {
 
     readonly onDidWrite = this.writeEmitter.event;
 
-    constructor(protected ws: WebSocket, protected maxHistory = 100) {
+    constructor(protected ws: WebSocket, protected maxHistory: number) {
         const writePromptDebounce = debounce(() => this.writePrompt(), 100);
 
         const re = /\n/g;

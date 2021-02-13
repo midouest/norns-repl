@@ -35,7 +35,8 @@ async function connectCommand(): Promise<void> {
     });
     status.hide();
 
-    const repl = new NornsREPL(ws);
+    const { length: maxHistory } = vscode.workspace.getConfiguration('norns-repl.history');
+    const repl = new NornsREPL(ws, maxHistory);
     term = vscode.window.createTerminal({
         name: 'norns',
         pty: repl,
