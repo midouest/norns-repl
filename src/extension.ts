@@ -30,21 +30,25 @@ async function connectCommand(): Promise<void> {
     status.show();
 
     const { host, port } = vscode.workspace.getConfiguration('norns-repl.connect');
-    const ws = await connectClient({
+    const webSocket = await connectClient({
         host, port
     });
     status.hide();
 
     const { length: maxHistory } = vscode.workspace.getConfiguration('norns-repl.history');
-    const repl = new NornsREPL(ws, maxHistory);
+    const repl = new NornsREPL({
+        webSocket,
+        maxHistory,
+        promptDebounce: 100,
+    });
     term = vscode.window.createTerminal({
         name: 'norns',
         pty: repl,
     });
     term.show();
 
-    ws.on('error', cleanup);
-    ws.on('close', cleanup);
+    webSocket.on('error', cleanup);
+    webSocket.on('close', cleanup);
 }
 
 function cleanup() {

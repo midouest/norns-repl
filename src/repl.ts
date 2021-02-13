@@ -4,6 +4,12 @@ import WebSocket = require('ws');
 import { InputBuffer } from './input';
 import { info, debounce } from './util';
 
+export interface NornsREPLOptions {
+    webSocket: WebSocket;
+    maxHistory: number;
+    promptDebounce: number;
+}
+
 export class NornsREPL implements vscode.Pseudoterminal {
     protected input = new InputBuffer({
         prefix: '> ',
@@ -14,11 +20,11 @@ export class NornsREPL implements vscode.Pseudoterminal {
 
     readonly onDidWrite = this.writeEmitter.event;
 
-    constructor(protected ws: WebSocket, protected maxHistory: number) {
-        const writePromptDebounce = debounce(() => this.writePrompt(), 100);
+    constructor(protected options: NornsREPLOptions) {
+        const writePromptDebounce = debounce(() => this.writePrompt(), this.options.promptDebounce);
 
         const re = /\n/g;
-        this.ws.on('message', (data) => {
+        this.options.webSocket.on('message', (data) => {
             const text = data.toString().replace(re, '\r\n');
             this.writeEmitter.fire(text);
             writePromptDebounce();
@@ -32,7 +38,7 @@ export class NornsREPL implements vscode.Pseudoterminal {
 
     close(): void {
         info('repl close');
-        this.ws.close();
+        this.options.webSocket.close();
     }
 
     handleInput(data: string): void {
@@ -47,7 +53,7 @@ export class NornsREPL implements vscode.Pseudoterminal {
         }
 
         this.writeEmitter.fire(response.output);
-        this.ws.send(response.command + '\r');
+        this.options.webSocket.send(response.command + '\r');
     }
 
     protected writePrompt(): void {
