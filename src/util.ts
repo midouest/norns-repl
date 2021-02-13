@@ -8,8 +8,6 @@ export function error(message?: any, ...optionalParams: any[]): void {
     console.error(errorMsg, ...optionalParams);
 }
 
-export type Type<T> = { new (...args: any[]): T };
-
 export function debounce(callback: () => void, ms: number): () => void {
     let timeout: NodeJS.Timeout;
     return () => {

@@ -1,7 +1,7 @@
 import { History } from "./history";
 import { deleteAt, insertAt } from "./util";
 
-export interface PromptOptions {
+export interface InputBufferOptions {
     prefix: string;
     maxHistory: number;
 }
@@ -19,7 +19,7 @@ export class InputBuffer {
     protected prevBuffer?: string;
     protected history = new History(this.options.maxHistory);
 
-    constructor(protected options: PromptOptions) {}
+    constructor(protected options: InputBufferOptions) {}
 
     handle(data: string): WriteResponse {
         if (data === BACKSPACE) {

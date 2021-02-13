@@ -22,14 +22,20 @@ export class NornsREPL implements vscode.Pseudoterminal {
     });
 
     protected writeEmitter = new vscode.EventEmitter<string>();
+    protected closeEmitter = new vscode.EventEmitter<void>();
 
     readonly onDidWrite = this.writeEmitter.event;
+    readonly onDidClose = this.closeEmitter.event;
 
     constructor(protected options: NornsREPLOptions) {
         const writePromptDebounce = debounce(
             () => this.writePrompt(),
             this.options.promptDebounce
         );
+
+        this.options.webSocket.on("close", () => {
+            this.closeEmitter.fire();
+        });
 
         const re = /\n/g;
         this.options.webSocket.on("message", (data) => {

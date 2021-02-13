@@ -1,17 +1,25 @@
 import * as vscode from "vscode";
-import { ConnectOptions, connectCommand } from "./connect";
 
+import { ConnectCommandOptions, executeConnectCommand } from "./command";
 import { info } from "./util";
+
+const CONFIG = [
+    {
+        name: "matron",
+        unit: "norns-matron.service",
+        terminator: "\n",
+    },
+    {
+        name: "crone",
+        unit: "norns-sclang.service",
+        terminator: "\x1b",
+    },
+] as const;
 
 export function activate(context: vscode.ExtensionContext) {
     info("activate");
 
-    const commands = [
-        ["matron", "norns-matron.service", "\n"],
-        ["crone", "norns-sclang.service", "\x1b"],
-    ];
-
-    for (const [name, unit, terminator] of commands) {
+    for (const { name, unit, terminator } of CONFIG) {
         let disposable = vscode.commands.registerCommand(
             `nornsREPL.${name}.connect`,
             createConnectCommand(name, unit, terminator)
@@ -20,53 +28,45 @@ export function activate(context: vscode.ExtensionContext) {
     }
 }
 
-let terminals: { [name: string]: vscode.Terminal } = {};
-
 function createConnectCommand(
     name: string,
     unit: string,
     terminator: string
 ): () => void {
-    function cleanup(): void {
-        const term = terminals[name];
-        term?.dispose();
-        delete terminals[name];
-    }
-
     const { host, maxHistory } = vscode.workspace.getConfiguration("nornsREPL");
     const { port } = vscode.workspace.getConfiguration(`nornsREPL.${name}`);
-    const options: ConnectOptions = {
+    const options: ConnectCommandOptions = {
         name,
         host,
         port,
         maxHistory,
         terminator,
         unit,
-        cleanup,
     };
 
     return async () => {
-        let term = terminals[name];
+        let term = getTerminal(name);
         if (term) {
             term.show();
             return;
         }
 
-        const pty = await connectCommand(options);
+        const pty = await executeConnectCommand(options);
         term = vscode.window.createTerminal({
             name,
             pty,
         });
         term.show();
-
-        terminals[name] = term;
     };
 }
 
 export function deactivate() {
     info("deactivate");
-    for (const term of Object.values(terminals)) {
-        term.dispose();
+    for (const { name } of CONFIG) {
+        getTerminal(name)?.dispose();
     }
-    terminals = {};
+}
+
+function getTerminal(name: string): vscode.Terminal | undefined {
+    return vscode.window.terminals.find((term) => term.name === name);
 }
