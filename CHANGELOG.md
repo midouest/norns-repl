@@ -6,10 +6,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
-- chore: remove RxJS dependency
+- refactor: remove RxJS dependency
+- feat: cursor back/forward
+- feat: history improvements
 
 ## [1.0.0] - 2021-02-06
 
 Initial release
 
-- `norns-repl.connect` command
+- feat: `norns-repl.connect` command
