@@ -46,20 +46,20 @@ export class InputBuffer {
             return data;
         }
 
-        if (data.length > 1 || (data !== RETURN && data.charCodeAt(0) < 32)) {
-            return;
-        }
-
         if (data === RETURN) {
             return this.handleReturn();
         }
 
+        if (data.charCodeAt(0) < 32) {
+            return;
+        }
+
         this.buffer = insertAt(this.buffer, this.cursor, data);
         let output = this.buffer.slice(this.cursor);
-        if (output.length > 1) {
+        if (output.length !== data.length) {
             output += cursorBack(output.length - 1);
         }
-        this.cursor += 1;
+        this.cursor += data.length;
         return output;
     }
 

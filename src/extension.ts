@@ -7,14 +7,14 @@ export function activate(context: vscode.ExtensionContext) {
     info("activate");
 
     const commands = [
-        ["matron", "\n"],
-        ["crone", "\x1b"],
+        ["matron", "norns-matron.service", "\n"],
+        ["crone", "norns-sclang.service", "\x1b"],
     ];
 
-    for (const [name, terminator] of commands) {
+    for (const [name, unit, terminator] of commands) {
         let disposable = vscode.commands.registerCommand(
             `nornsREPL.${name}.connect`,
-            createConnectCommand(name, terminator)
+            createConnectCommand(name, unit, terminator)
         );
         context.subscriptions.push(disposable);
     }
@@ -22,7 +22,11 @@ export function activate(context: vscode.ExtensionContext) {
 
 let terminals: { [name: string]: vscode.Terminal } = {};
 
-function createConnectCommand(name: string, terminator: string): () => void {
+function createConnectCommand(
+    name: string,
+    unit: string,
+    terminator: string
+): () => void {
     function cleanup(): void {
         const term = terminals[name];
         term?.dispose();
@@ -37,6 +41,7 @@ function createConnectCommand(name: string, terminator: string): () => void {
         port,
         maxHistory,
         terminator,
+        unit,
         cleanup,
     };
 
