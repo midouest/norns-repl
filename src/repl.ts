@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import WebSocket = require('ws');
+import { History } from './history';
 
 import { info, debounce } from './util';
 
@@ -19,12 +20,11 @@ enum Actions {
 export class NornsREPL implements vscode.Pseudoterminal {
     protected writeEmitter = new vscode.EventEmitter<string>();
     protected buffer = '';
-    protected history: string[] = [];
-    protected historyIdx = 0;
+    protected history = new History(this.maxHistory);
 
     readonly onDidWrite = this.writeEmitter.event;
 
-    constructor(protected ws: WebSocket) {
+    constructor(protected ws: WebSocket, protected maxHistory = 100) {
         const re = /\n/g;
 
         const writePromptDebounce = debounce(() => this.writePrompt(), 100);
@@ -56,9 +56,9 @@ export class NornsREPL implements vscode.Pseudoterminal {
         // ignore control codes
         if (data.length > 1) {
             if (data === Keys.up) {
-                this.historyUp();
+                this.restoreHistory(this.history.prev());
             } else if (data === Keys.down) {
-                this.historyDown();
+                this.restoreHistory(this.history.next());
             }
             return;
         }
@@ -81,26 +81,11 @@ export class NornsREPL implements vscode.Pseudoterminal {
         this.writeEmitter.fire(Actions.deleteChar);
     }
 
-    protected historyUp(): void {
-        if (this.historyIdx === this.history.length) {
+    protected restoreHistory(command?: string): void {
+        if (!command) {
             return;
         }
-        this.historyIdx++;
-        this.restoreHistory();
-    }
-
-    protected historyDown(): void {
-        if (this.historyIdx === 0) {
-            this.buffer = '';
-            this.writePrompt();
-            return;
-        }
-        this.historyIdx--;
-        this.restoreHistory();
-    }
-
-    protected restoreHistory(): void {
-        this.buffer = this.history[this.history.length - this.historyIdx];
+        this.buffer = command;
         this.writePrompt();
     }
 
@@ -111,7 +96,6 @@ export class NornsREPL implements vscode.Pseudoterminal {
             }
 
             this.history.push(this.buffer);
-            this.historyIdx = 0;
 
             this.writeEmitter.fire('\r\n');
             this.ws.send(this.buffer + '\r');
