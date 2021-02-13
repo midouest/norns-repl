@@ -6,10 +6,11 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+# [1.1.0] - 2021-02-13
+
 - refactor: remove RxJS dependency
 - feat: cursor back/forward
 - feat: history improvements
-- feat: max history configuration
 
 ## [1.0.0] - 2021-02-06
 
