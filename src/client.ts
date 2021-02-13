@@ -1,6 +1,5 @@
 import * as WebSocket from 'ws';
-import { error, info } from './log';
-import { Type } from './util';
+import { error, info, Type } from './util';
 
 export interface ConnectClientOptions {
     host: string;

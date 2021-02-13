@@ -1,8 +1,7 @@
 import * as vscode from 'vscode';
 import WebSocket = require('ws');
 
-import { info } from './log';
-import { debounce } from './util';
+import { info, debounce } from './util';
 
 enum Keys {
     enter = '\r',

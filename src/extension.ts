@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { connectClient } from './client';
 
-import { info } from './log';
+import { info } from './util';
 import { NornsREPL } from './repl';
 
 let term: vscode.Terminal | undefined;
