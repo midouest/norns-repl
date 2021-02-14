@@ -19,34 +19,42 @@ export class InputBuffer {
     protected prevBuffer?: string;
     protected history = new History(this.options.maxHistory);
 
+    get contents(): string {
+        return this.buffer;
+    }
+
+    get cursorPos(): number {
+        return this.cursor;
+    }
+
     constructor(protected options: InputBufferOptions) {}
 
     handle(data: string): WriteResponse {
-        if (data === BACKSPACE) {
+        if (data === Key.backspace) {
             return this.handleBackspace();
         }
 
-        if (data === UP) {
+        if (data === Key.up) {
             const command = this.history.prev();
             return this.handleHistory(command);
         }
 
-        if (data === DOWN) {
+        if (data === Key.down) {
             const command = this.history.next();
             return this.handleHistory(command ?? "");
         }
 
-        if (data === LEFT && this.cursor > 0) {
+        if (data === Key.left && this.cursor > 0) {
             this.cursor -= 1;
             return data;
         }
 
-        if (data === RIGHT && this.cursor < this.buffer.length) {
+        if (data === Key.right && this.cursor < this.buffer.length) {
             this.cursor += 1;
             return data;
         }
 
-        if (data === RETURN) {
+        if (data === Key.return) {
             return this.handleReturn();
         }
 
@@ -57,14 +65,16 @@ export class InputBuffer {
         this.buffer = insertAt(this.buffer, this.cursor, data);
         let output = this.buffer.slice(this.cursor);
         if (output.length !== data.length) {
-            output += cursorBack(output.length - 1);
+            output += cursorBack(output.length - data.length);
         }
         this.cursor += data.length;
         return output;
     }
 
     prompt(): string {
-        return CLEAR_LINE + RETURN + this.options.prefix + this.buffer;
+        return (
+            Action.clearLine + Key.return + this.options.prefix + this.buffer
+        );
     }
 
     protected handleBackspace(): string | undefined {
@@ -74,7 +84,7 @@ export class InputBuffer {
 
         this.cursor--;
         this.buffer = deleteAt(this.buffer, this.cursor);
-        return CURSOR_BACK + DELETE_CHAR;
+        return Action.deleteChar;
     }
 
     protected handleHistory(command?: string): string | undefined {
@@ -95,7 +105,7 @@ export class InputBuffer {
 
         this.buffer = "";
         this.cursor = 0;
-        const output = NEWLINE;
+        const output = Action.newLine;
 
         return {
             output,
@@ -104,17 +114,21 @@ export class InputBuffer {
     }
 }
 
-function cursorBack(n: number): string {
+export function cursorBack(n: number): string {
     return `\x1b[${n}D`;
 }
 
-const CURSOR_BACK = "\x1b[D";
-const DELETE_CHAR = "\x1b[P";
-const CLEAR_LINE = "\x1b[2K";
-const RETURN = "\r";
-const NEWLINE = RETURN + "\n";
-const BACKSPACE = "\x7f";
-const UP = "\x1b[A";
-const DOWN = "\x1b[B";
-const RIGHT = "\x1b[C";
-const LEFT = "\x1b[D";
+export enum Key {
+    backspace = "\x7f",
+    return = "\r",
+    up = "\x1b[A",
+    down = "\x1b[B",
+    right = "\x1b[C",
+    left = "\x1b[D",
+}
+
+export enum Action {
+    deleteChar = "\x1b[D\x1b[P",
+    clearLine = "\x1b[2K",
+    newLine = "\r\n",
+}

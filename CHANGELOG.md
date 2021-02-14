@@ -6,6 +6,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+# [1.3.1] - 2021-02-14
+
+-   fix: correct cursor position when pasting mid-buffer
+
 # [1.3.0] - 2021-02-14
 
 -   feat: support special `;restart` and `;install` commands
