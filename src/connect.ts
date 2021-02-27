@@ -1,14 +1,12 @@
 import * as vscode from "vscode";
 import { API } from "./api";
-import { connectWebSocket } from "./websocket";
+import { connectWebSocket, ConnectWebSocketOptions } from "./websocket";
 import { NornsREPL } from "./repl";
 import { info } from "./util";
+import { SendWebSocketOptions } from "./send";
 
-export interface ConnectCommandOptions {
+export interface ConnectCommandOptions extends SendWebSocketOptions {
     name: string;
-    host: string;
-    port: number;
-    terminator: string;
     unit: string;
     maxHistory: number;
 }

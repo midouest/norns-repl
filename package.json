@@ -3,7 +3,7 @@
     "publisher": "midouest",
     "displayName": "Norns REPL",
     "description": "Interact with Norns in a VSCode terminal",
-    "version": "1.3.1",
+    "version": "1.4.0",
     "license": "MIT",
     "repository": {
         "url": "https://github.com/midouest/norns-repl"
@@ -17,7 +17,11 @@
     "main": "./dist/extension.js",
     "activationEvents": [
         "onCommand:nornsREPL.matron.connect",
-        "onCommand:nornsREPL.crone.connect"
+        "onCommand:nornsREPL.matron.send",
+        "onCommand:nornsREPL.crone.connect",
+        "onCommand:nornsREPL.crone.send",
+        "onCommand:nornsREPL.script.reload",
+        "onCommand:nornsREPL.sleep"
     ],
     "contributes": {
         "commands": [
@@ -26,8 +30,24 @@
                 "title": "Norns REPL: Connect to Matron..."
             },
             {
+                "command": "nornsREPL.matron.send",
+                "title": "Norns REPL: Send Command to Matron..."
+            },
+            {
                 "command": "nornsREPL.crone.connect",
                 "title": "Norns REPL: Connect to Crone..."
+            },
+            {
+                "command": "nornsREPL.crone.send",
+                "title": "Norns REPL: Send Command to Crone..."
+            },
+            {
+                "command": "nornsREPL.script.reload",
+                "title": "Norns REPL: Reload Script"
+            },
+            {
+                "command": "nornsREPL.sleep",
+                "title": "Norns REPL: Sleep"
             }
         ],
         "configuration": {

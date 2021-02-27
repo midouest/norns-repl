@@ -11,10 +11,30 @@ Interact with [Norns](https://monome.org/norns/) in a VSCode terminal
 -   Connect to the Matron REPL at the configured Norns host and port
 -   Command Palette: _"Norns REPL: Connect to Matron..."_
 
+`nornsREPL.matron.send`
+
+-   Send a command to the Matron REPL at the configured Norns host and port
+-   Command Palette: _"Norns REPL: Send Command to Matron..."_
+
 `nornsREPL.crone.connect`
 
 -   Connect to the Crone REPL at the configured Norns host and port
 -   Command Palette: _"Norns REPL: Connect to Crone..."_
+
+`nornsREPL.crone.send`
+
+-   Send a command to the Crone REPL at the configured Norns host and port
+-   Command Palette: _"Norns REPL: Send Command to Crone..."_
+
+`nornsREPL.script.reload`
+
+-   Reload the current script using `norns.script.load(norns.state.script)`
+-   Command Palette: _"Norns REPL: Reload Script"_
+
+`nornsREPL.sleep`
+
+-   Put Norns to sleep using `norns.shutdown()`
+-   Command Palette: _"Norns REPL: Sleep"_
 
 ## Configuration
 
