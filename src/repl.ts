@@ -28,12 +28,15 @@ export class NornsREPL implements vscode.Pseudoterminal {
     readonly onDidClose = this.closeEmitter.event;
 
     constructor(protected options: NornsREPLOptions) {
+        this.setContextIsActive(true);
+
         const writePromptDebounce = debounce(
             () => this.writePrompt(),
             this.options.promptDebounce
         );
 
         this.options.webSocket.on("close", () => {
+            this.setContextIsActive(false);
             this.closeEmitter.fire();
         });
 
@@ -105,5 +108,14 @@ export class NornsREPL implements vscode.Pseudoterminal {
     protected async do(operation: string): Promise<void> {
         await this.options.api.doUnitOperation(this.options.unit, operation);
         // todo: response
+    }
+
+    protected setContextIsActive(isActive: boolean): void {
+        info(`repl isActive: ${isActive}`);
+        vscode.commands.executeCommand(
+            "setContext",
+            "nornsREPL.matron.isActive",
+            isActive
+        );
     }
 }

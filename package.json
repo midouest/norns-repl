@@ -18,6 +18,7 @@
     "activationEvents": [
         "onCommand:nornsREPL.matron.connect",
         "onCommand:nornsREPL.matron.send",
+        "onCommand:nornsREPL.matron.sendSelection",
         "onCommand:nornsREPL.crone.connect",
         "onCommand:nornsREPL.crone.send",
         "onCommand:nornsREPL.script.reload",
@@ -34,6 +35,10 @@
                 "title": "Norns REPL: Send Command to Matron..."
             },
             {
+                "command": "nornsREPL.matron.sendSelection",
+                "title": "Norns REPL: Send current editor selection to Matron..."
+            },
+            {
                 "command": "nornsREPL.crone.connect",
                 "title": "Norns REPL: Connect to Crone..."
             },
@@ -48,6 +53,14 @@
             {
                 "command": "nornsREPL.sleep",
                 "title": "Norns REPL: Sleep"
+            }
+        ],
+        "keybindings": [
+            {
+                "command": "nornsREPL.matron.sendSelection",
+                "key": "ctrl+enter",
+                "mac": "cmd+enter",
+                "when": "editorLangId == lua && nornsREPL:matron.isActive"
             }
         ],
         "configuration": {
