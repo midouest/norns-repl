@@ -111,10 +111,10 @@ export class NornsREPL implements vscode.Pseudoterminal {
     }
 
     protected setContextIsActive(isActive: boolean): void {
-        info(`repl isActive: ${isActive}`);
+        info(`repl ${this.options.name}.isActive: ${isActive}`);
         vscode.commands.executeCommand(
             "setContext",
-            "nornsREPL.matron.isActive",
+            `nornsREPL.${this.options.name}.isActive`,
             isActive
         );
     }
