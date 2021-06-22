@@ -43,17 +43,17 @@ export function activate(context: vscode.ExtensionContext) {
             `nornsREPL.${name}.send`,
             createSendCommand(name, terminator)
         );
+
+        registerCommand(
+            context,
+            `nornsREPL.${name}.sendSelection`,
+            createSendSelectionCommand(name, terminator)
+        );
     }
 
     for (const { name, command } of FIXED_SEND_CONFIG) {
         registerCommand(context, name, createFixedSendCommand(command));
     }
-
-    registerCommand(
-        context,
-        "nornsREPL.matron.sendSelection",
-        createSendSelectionCommand()
-    );
 }
 
 function registerCommand(
@@ -123,7 +123,13 @@ function createSendCommand(
     };
 }
 
-function createSendSelectionCommand(): () => void {
+function createSendSelectionCommand(
+    name: string,
+    terminator: string
+): () => void {
+    const { host } = vscode.workspace.getConfiguration("nornsREPL");
+    const { port } = vscode.workspace.getConfiguration(`nornsREPL.${name}`);
+
     return () => {
         const { activeTextEditor } = vscode.window;
         if (!activeTextEditor) {
@@ -140,13 +146,10 @@ function createSendSelectionCommand(): () => void {
         }
         const command = document.getText(range);
 
-        const { host } = vscode.workspace.getConfiguration("nornsREPL");
-        const { port } = vscode.workspace.getConfiguration("nornsREPL.matron");
-
         executeSendCommand({
             host,
             port,
-            terminator: "\n",
+            terminator,
             command,
         });
     };

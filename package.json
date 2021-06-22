@@ -47,6 +47,10 @@
                 "title": "Norns REPL: Send Command to Crone..."
             },
             {
+                "command": "nornsREPL.crone.sendSelection",
+                "title": "Norns REPL: Send current editor selection to Crone..."
+            },
+            {
                 "command": "nornsREPL.script.reload",
                 "title": "Norns REPL: Reload Script"
             },
@@ -61,6 +65,12 @@
                 "key": "ctrl+enter",
                 "mac": "cmd+enter",
                 "when": "editorLangId == lua && nornsREPL:matron.isActive"
+            },
+            {
+                "command": "nornsREPL.crone.sendSelection",
+                "key": "ctrl+enter",
+                "mac": "cmd+enter",
+                "when": "editorLangId == supercollider && nornsREPL:crone.isActive"
             }
         ],
         "configuration": {
