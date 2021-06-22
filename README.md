@@ -16,6 +16,11 @@ Interact with [Norns](https://monome.org/norns/) in a VSCode terminal
 -   Send a command to the Matron REPL at the configured Norns host and port
 -   Command Palette: _"Norns REPL: Send Command to Matron..."_
 
+`nornsREPL.matron.sendSelection`
+
+-   Send the selected Lua code to the Matron REPL at the configured Norns host and port
+-   The Matron REPL must be connected and the active editor language must be Lua
+
 `nornsREPL.crone.connect`
 
 -   Connect to the Crone REPL at the configured Norns host and port
@@ -25,6 +30,11 @@ Interact with [Norns](https://monome.org/norns/) in a VSCode terminal
 
 -   Send a command to the Crone REPL at the configured Norns host and port
 -   Command Palette: _"Norns REPL: Send Command to Crone..."_
+
+`nornsREPL.crone.sendSelection`
+
+-   Send the selected Lua code to the Crone REPL at the configured Norns host and port
+-   The Crone REPL must be connected and the active editor language must be Supercollider
 
 `nornsREPL.script.reload`
 
