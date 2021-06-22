@@ -6,6 +6,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+# [1.5.0] - 2021-06-22
+
+-   feat: sendSelection command for live-coding with crone or matron
+
 # [1.4.0] - 2021-02-27
 
 -   feat: commands for sending arbitrary input to matron/crone
