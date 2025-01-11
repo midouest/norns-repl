@@ -6,6 +6,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+# [1.6.0] - 2025-01-11
+
+-   chore: upgrade to latest vscode engine
+
 # [1.5.0] - 2021-06-22
 
 -   feat: sendSelection command for live-coding with crone or matron
