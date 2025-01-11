@@ -1,4 +1,4 @@
-import * as WebSocket from "ws";
+import WebSocket from "ws";
 import { error, info } from "./util";
 
 export interface ConnectWebSocketOptions {

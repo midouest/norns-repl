@@ -17,7 +17,7 @@ export class InputBuffer {
     protected cursor = 0;
     protected buffer = "";
     protected prevBuffer?: string;
-    protected history = new History(this.options.maxHistory);
+    protected history: History;
 
     get contents(): string {
         return this.buffer;
@@ -27,7 +27,9 @@ export class InputBuffer {
         return this.cursor;
     }
 
-    constructor(protected options: InputBufferOptions) {}
+    constructor(protected options: InputBufferOptions) {
+        this.history = new History(this.options.maxHistory);
+    }
 
     handle(data: string): WriteResponse {
         if (data === Key.backspace) {

@@ -16,10 +16,7 @@ export interface NornsREPLOptions {
 }
 
 export class NornsREPL implements vscode.Pseudoterminal {
-    protected input = new InputBuffer({
-        prefix: "> ",
-        maxHistory: this.options.maxHistory,
-    });
+    protected input: InputBuffer;
 
     protected writeEmitter = new vscode.EventEmitter<string>();
     protected closeEmitter = new vscode.EventEmitter<void>();
@@ -28,6 +25,11 @@ export class NornsREPL implements vscode.Pseudoterminal {
     readonly onDidClose = this.closeEmitter.event;
 
     constructor(protected options: NornsREPLOptions) {
+        this.input = new InputBuffer({
+            prefix: "> ",
+            maxHistory: this.options.maxHistory,
+        });
+
         this.setContextIsActive(true);
 
         const writePromptDebounce = debounce(
